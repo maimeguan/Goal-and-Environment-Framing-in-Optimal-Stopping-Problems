@@ -1,0 +1,105 @@
+# Hierarchical Threshold Model -- MAXIMUM-GOAL
+# Maximum-high vs. Maximum-low
+# Hypothesis: test whether deltas are nonzero due to environmental manipulations, or zero
+# Data is from SilvaData d1 (participants 1-28 are max-high, 29-56 are max-low)
+
+model{
+
+	# Maximum-high participants
+	for (i in 1:nsubj/2){
+	    alpha[i] ~ dunif(0,1)	# probability of execution parameter a
+
+		# thresholds tau per participant in each position
+        tau[i,1] ~ dnorm(muAh, pow(sigmaAh,-2))T(0, 100)
+        tau[i,2] ~ dnorm(muBh, pow(sigmaBh,-2))T(0, 100)
+		tau[i,3] ~ dnorm(muCh, pow(sigmaCh,-2))T(0, 100)
+        tau[i,4] ~ dnorm(muDh, pow(sigmaDh,-2))T(0, 100)
+        tau[i,5] <- 0
+		
+		for (j in 1:nprob){
+			for (k in 1:nstim){
+				above[i,j,k] <- step(stim[i,j,k] - tau[i,k])
+			}
+			
+			# threshold choice model, pick first stimulus that is BOTH the biggest so far AND above their threshold
+			indtmp[i,j,1] <- above[i,j,1]
+            indtmp[i,j,2] <- 2*above[i,j,2]*biggest[i,j,2]*equals(indtmp[i,j,1],0)
+            indtmp[i,j,3] <- 3*above[i,j,3]*biggest[i,j,3]*equals(indtmp[i,j,1],0)*equals(indtmp[i,j,2],0)
+            indtmp[i,j,4] <- 4*above[i,j,4]*biggest[i,j,4]*equals(indtmp[i,j,1],0)*equals(indtmp[i,j,2],0)*equals(indtmp[i,j,3],0)
+			ind[i,j] <- sum(indtmp[i,j,1:4])+ 5*equals(sum(indtmp[i,j,1:4]),0)
+			for (k in 1:nstim){
+				theta[i,j,k] <- equals(ind[i,j],k)*alpha[i] + (1-equals(ind[i,j],k))*(1-alpha[i])/4
+			}
+			y[i,j] ~ dcat(theta[i,j,1:nstim])
+			predy[i,j] ~ dcat(theta[i,j,1:nstim])
+		}
+	}
+	
+	# Maximum-low participants
+	for (i in 29:nsubj){
+	    alpha[i] ~ dunif(0,1)
+
+        tau[i,1] ~ dnorm(muAl, pow(sigmaAl,-2))T(0, 100)
+        tau[i,2] ~ dnorm(muBl, pow(sigmaBl,-2))T(0, 100)
+		tau[i,3] ~ dnorm(muCl, pow(sigmaCl,-2))T(0, 100)
+        tau[i,4] ~ dnorm(muDl, pow(sigmaDl,-2))T(0, 100)
+        tau[i,5] <- 0
+		for (j in 1:nprob){
+			for (k in 1:nstim){
+				above[i,j,k] <- step(stim[i,j,k] - tau[i,k])
+			}
+			
+			# threshold choice model, pick first stimulus that is BOTH the biggest so far AND above their threshold
+			indtmp[i,j,1] <- above[i,j,1]
+            indtmp[i,j,2] <- 2*above[i,j,2]*biggest[i,j,2]*equals(indtmp[i,j,1],0)
+            indtmp[i,j,3] <- 3*above[i,j,3]*biggest[i,j,3]*equals(indtmp[i,j,1],0)*equals(indtmp[i,j,2],0)
+            indtmp[i,j,4] <- 4*above[i,j,4]*biggest[i,j,4]*equals(indtmp[i,j,1],0)*equals(indtmp[i,j,2],0)*equals(indtmp[i,j,3],0)
+			ind[i,j] <- sum(indtmp[i,j,1:4])+ 5*equals(sum(indtmp[i,j,1:4]),0)
+			for (k in 1:nstim){
+				theta[i,j,k] <- equals(ind[i,j],k)*alpha[i] + (1-equals(ind[i,j],k))*(1-alpha[i])/4
+			}
+			y[i,j] ~ dcat(theta[i,j,1:nstim])
+			predy[i,j] ~ dcat(theta[i,j,1:nstim])
+		}
+	}
+	
+	# Center thresholds
+	muA ~ dunif(0, 100)
+	muB ~ dunif(0, 100)
+	muC ~ dunif(0, 100)
+	muD ~ dunif(0, 100)
+	
+	# Max-high group level threshold means and sds
+	muAh <- max(0, min(100, muA + deltaA/2))
+	muBh <- max(0, min(100, muB + deltaB/2))
+	muCh <- max(0, min(100, muC + deltaC/2))	
+	muDh <- max(0, min(100, muD + deltaD/2))
+	sigmaAh ~ dunif(0, 30)
+	sigmaBh ~ dunif(0, 30)
+	sigmaCh ~ dunif(0, 30)
+	sigmaDh ~ dunif(0, 30)
+	
+	# Max-low group level threshold means and sds
+	muAl <- max(0, min(100, muA - deltaA/2))
+	muBl <- max(0, min(100, muB - deltaB/2))
+	muCl <- max(0, min(100, muC - deltaC/2))
+	muDl <- max(0, min(100, muD - deltaD/2))
+	sigmaAl ~ dunif(0, 30)
+	sigmaBl ~ dunif(0, 30)
+	sigmaCl ~ dunif(0, 30)
+	sigmaDl ~ dunif(0, 30)
+	
+	# Differences in group level threshold means
+	deltaA ~ dunif(-100, 100)
+	deltaB ~ dunif(-100, 100)
+	deltaC ~ dunif(-100, 100)
+	deltaD ~ dunif(-100, 100)
+	deltaAprior ~ dunif(-100, 100)
+	deltaBprior ~ dunif(-100, 100)
+	deltaCprior ~ dunif(-100, 100)
+	deltaDprior ~ dunif(-100, 100)
+	
+    for (i in 1:nprob+1){
+      base[i] <- 1/(nprob+1)
+    }
+}
