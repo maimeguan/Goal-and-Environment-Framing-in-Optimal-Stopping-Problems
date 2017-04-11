@@ -34,11 +34,11 @@ model{
 			
 			# process-oriented part; build in conditional probabilities into the sequence			
 			theta[i,j,1] <- equals(ind[i,j],1)*alpha[i] + (1-equals(ind[i,j],1))*p[i]
-			theta[i,j,2] <- (1 - theta[i,j,1])*(equals(ind[i,j],2)*alpha[i] + (1-equals(ind[i,j],2))*p[i])
-			theta[i,j,3] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])*(equals(ind[i,j],3)*alpha[i] + (1-equals(ind[i,j],3))*p[i])
-			theta[i,j,4] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])* (1 - theta[i,j,3])*(equals(ind[i,j],4)*alpha[i] + (1-equals(ind[i,j],4))*p[i])
-			theta[i,j,5] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])* (1 - theta[i,j,3])*(1 - theta[i,j,4])*(equals(ind[i,j],5)*alpha[i] + (1-equals(ind[i,j],5))*p[i])
-
+			theta[i,j,2] <- (1 - theta[i,j,1])*equals(ind[i,j],2)*alpha[i] + (1 - theta[i,j,1])*(1-equals(ind[i,j],2))*p[i]
+			theta[i,j,3] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])*equals(ind[i,j],3)*alpha[i] + (1 - theta[i,j,1])*(1 - theta[i,j,2])*(1-equals(ind[i,j],3))*p[i]
+			theta[i,j,4] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])*(1 - theta[i,j,3])*equals(ind[i,j],4)*alpha[i] + (1 - theta[i,j,1])*(1 - theta[i,j,2])*(1 - theta[i,j,3])*(1-equals(ind[i,j],4))*p[i]
+			theta[i,j,5] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])*(1 - theta[i,j,3])*(1 - theta[i,j,4])*equals(ind[i,j],5)*alpha[i] + (1 - theta[i,j,1])*(1 - theta[i,j,2])*(1 - theta[i,j,3])*(1 - theta[i,j,4])*(1-equals(ind[i,j],5))*p[i]
+			
 			y[i,j] ~ dcat(theta[i,j,1:nstim])
 			predy[i,j] ~ dcat(theta[i,j,1:nstim])
 		}
@@ -70,11 +70,11 @@ model{
 			
 			# process-oriented part; build in conditional probabilities into the sequence			
 			theta[i,j,1] <- equals(ind[i,j],1)*alpha[i] + (1-equals(ind[i,j],1))*p[i]
-			theta[i,j,2] <- (1 - theta[i,j,1])*(equals(ind[i,j],2)*alpha[i] + (1-equals(ind[i,j],2))*p[i])
-			theta[i,j,3] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])*(equals(ind[i,j],3)*alpha[i] + (1-equals(ind[i,j],3))*p[i])
-			theta[i,j,4] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])* (1 - theta[i,j,3])*(equals(ind[i,j],4)*alpha[i] + (1-equals(ind[i,j],4))*p[i])
-			theta[i,j,5] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])* (1 - theta[i,j,3])*(1 - theta[i,j,4])*(equals(ind[i,j],5)*alpha[i] + (1-equals(ind[i,j],5))*p[i])
-
+			theta[i,j,2] <- (1 - theta[i,j,1])*equals(ind[i,j],2)*alpha[i] + (1 - theta[i,j,1])*(1-equals(ind[i,j],2))*p[i]
+			theta[i,j,3] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])*equals(ind[i,j],3)*alpha[i] + (1 - theta[i,j,1])*(1 - theta[i,j,2])*(1-equals(ind[i,j],3))*p[i]
+			theta[i,j,4] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])*(1 - theta[i,j,3])*equals(ind[i,j],4)*alpha[i] + (1 - theta[i,j,1])*(1 - theta[i,j,2])*(1 - theta[i,j,3])*(1-equals(ind[i,j],4))*p[i]
+			theta[i,j,5] <- (1 - theta[i,j,1])*(1 - theta[i,j,2])*(1 - theta[i,j,3])*(1 - theta[i,j,4])*equals(ind[i,j],5)*alpha[i] + (1 - theta[i,j,1])*(1 - theta[i,j,2])*(1 - theta[i,j,3])*(1 - theta[i,j,4])*(1-equals(ind[i,j],5))*p[i]
+			
 			y[i,j] ~ dcat(theta[i,j,1:nstim])
 			predy[i,j] ~ dcat(theta[i,j,1:nstim])
 		}
